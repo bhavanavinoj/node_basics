@@ -1,9 +1,14 @@
+import 'reflect-metadata';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { ValidationPipe } from '@nestjs/common';
+import { ValidationPipe, BadRequestException } from '@nestjs/common';
 
 async function bootstrap() {
+  console.log('MAIN.TS LOADED');
   const app = await NestFactory.create(AppModule);
+
+    console.log('VALIDATION PIPE ACTIVE');
+
 
   // CORS
   app.enableCors({
@@ -11,18 +16,31 @@ async function bootstrap() {
     credentials: true,
   });
 
-  // VALIDATION PIPE 
+  // VALIDATION PIPE (FIXED)
   app.useGlobalPipes(
     new ValidationPipe({
-      whitelist: true,              // removes extra fields
-      forbidNonWhitelisted: true,   // throws error if extra fields sent
-      transform: true,              // auto-transform DTOs
+      transform: true,
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      
+
+      // 👇 ONLY FIRST ERROR
+      exceptionFactory: (errors) => {
+        const firstError = errors[0];
+
+        // get first validation message
+        const message = firstError?.constraints
+          ? Object.values(firstError.constraints)[0]
+          : 'Validation error';
+
+        return new BadRequestException(message);
+      },
     }),
   );
 
-  await app.listen(3000);
+  await app.listen(process.env.PORT || 3000);
 
-  console.log('🚀 Server running on http://localhost:3000');
+  console.log(`🚀 Server running on http://localhost:${process.env.PORT || 3000}`);
 }
 
 bootstrap();
