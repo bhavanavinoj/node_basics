@@ -17,4 +17,14 @@ export class AuthController {
   login(@Body() dto: LoginDto) {
     return this.service.login(dto);
   }
+
+  @Post('admin/login')
+  adminLogin(@Body() dto: LoginDto) {
+    return this.service.adminLogin(dto);
+  }
+
+  @Post('create-admin')
+  createAdmin() {
+    return this.service.createAdmin();
+  }
 }

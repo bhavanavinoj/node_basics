@@ -2,6 +2,7 @@ import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
 @Entity('users')
 export class User {
+
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -13,4 +14,8 @@ export class User {
 
   @Column()
   password: string;
+
+  // 🔥 ADD THIS FOR ADMIN LOGIN
+  @Column({ default: 'user' })
+  role: string;
 }

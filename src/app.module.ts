@@ -8,15 +8,17 @@ import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { MailModule } from './mail/mail.module';
+import { AdminModule } from './admin/admin.module';
+import { BlogModule } from './blog/blog.module';
+import { ChangePasswordModule } from './change-password/change-password.module';
+import { InstructorModule } from './instructor/instructor.module'; // ✅ ONLY THIS
 
 @Module({
   imports: [
-    // ✅ Load ENV
     ConfigModule.forRoot({
       isGlobal: true,
     }),
 
-    // ✅ DATABASE CONNECTION
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: 'localhost',
@@ -31,6 +33,10 @@ import { MailModule } from './mail/mail.module';
     AuthModule,
     UsersModule,
     MailModule,
+    AdminModule,
+    BlogModule,
+    ChangePasswordModule,
+    InstructorModule, 
   ],
   controllers: [AppController],
   providers: [AppService],
