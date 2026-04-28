@@ -1,19 +1,37 @@
 import {
  IsNotEmpty,
- IsOptional
+ IsOptional,
+ IsString
 } from "class-validator";
 
 export class CreateBlogDto {
 
- @IsNotEmpty()
+ @IsNotEmpty({
+   message:"Blog title is required"
+ })
+ @IsString({
+   message:"Title must be text"
+ })
  title: string;
 
- @IsNotEmpty()
+
+ @IsNotEmpty({
+   message:"Blog content is required"
+ })
+ @IsString({
+   message:"Content is required"
+ })
  content: string;
 
+
+ // keep optional for edit
  @IsOptional()
  image?: string;
 
- @IsOptional()
- status?: string;
+
+ @IsNotEmpty({
+   message:"Status is required"
+ })
+ status: string;
+
 }

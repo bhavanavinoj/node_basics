@@ -1,21 +1,43 @@
 import {
   IsNotEmpty,
   IsEmail,
-  IsOptional
+  IsOptional,
+  IsString
 } from "class-validator";
 
 export class CreateInstructorDto {
 
-  @IsNotEmpty()
+  @IsNotEmpty({
+    message: "Instructor name is required"
+  })
+  @IsString({
+    message: "Name must be text"
+  })
   name: string;
 
-  @IsEmail()
+
+  @IsNotEmpty({
+    message: "Email is required"
+  })
+  @IsEmail(
+    {},
+    {
+      message: "Enter a valid email address"
+    }
+  )
   email: string;
 
-  @IsNotEmpty()
+
+  @IsNotEmpty({
+    message: "Role is required"
+  })
+  @IsString({
+    message: "Role must be text"
+  })
   role: string;
 
-  // ✅ same as blog style (optional image)
+
+  // optional on edit, validate file separately in controller for create
   @IsOptional()
   image?: string;
 }
