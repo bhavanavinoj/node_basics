@@ -21,7 +21,7 @@ import { AuthGuard } from "@nestjs/passport";
 import { BlogService } from "./blog.service";
 import { CreateBlogDto } from "./dto/createBlog.dto";
 
-@UseGuards(AuthGuard("jwt"))
+// @UseGuards(AuthGuard("jwt"))
 @Controller("blogs")
 export class BlogController {
 
@@ -30,6 +30,7 @@ export class BlogController {
   ) {}
 
   // CREATE BLOG WITH IMAGE
+  @UseGuards(AuthGuard("jwt"))
   @Post()
   @UseInterceptors(
     FileInterceptor("image", {
@@ -70,6 +71,7 @@ export class BlogController {
   }
 
   // UPDATE BLOG WITH OPTIONAL IMAGE
+  @UseGuards(AuthGuard("jwt"))
   @Patch(":id")
   @UseInterceptors(
     FileInterceptor("image", {
@@ -99,6 +101,7 @@ export class BlogController {
   }
 
   // DELETE
+  @UseGuards(AuthGuard("jwt"))
   @Delete(":id")
   remove(@Param("id") id: string) {
     return this.blogService.remove(+id);

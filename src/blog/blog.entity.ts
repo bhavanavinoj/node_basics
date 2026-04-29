@@ -1,28 +1,36 @@
 import {
- Entity,
- PrimaryGeneratedColumn,
- Column
-} from "typeorm";
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+} from 'typeorm';
 
 @Entity()
 export class Blog {
+  @PrimaryGeneratedColumn()
+  id: number;
 
- @PrimaryGeneratedColumn()
- id: number;
+  @Column()
+  title: string;
 
- @Column()
- title: string;
+  @Column('text')
+  content: string;
 
- @Column("text")
- content: string;
+  @Column({ nullable: true })
+  image: string;
 
- @Column({
-   nullable: true
- })
- image: string;
+  @Column({ default: '' })
+  tags: string;
 
- @Column({
-   default: "Draft"
- })
- status: string;
+  @Column()
+  author: string;
+
+  @Column({ name: 'publish_date' })
+  publishDate: string;
+
+  @Column({ default: 'Select' })
+  status: string;
+
+  @CreateDateColumn({ name: 'created_at' })
+  createdAt: Date;
 }
