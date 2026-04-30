@@ -15,13 +15,13 @@ import { FileInterceptor } from "@nestjs/platform-express";
 import { diskStorage } from "multer";
 import { extname } from "path";
 
-
 import { AuthGuard } from "@nestjs/passport";
+// OPTIONAL (if you have it)
+// import { AdminGuard } from "../auth/admin.guard";
 
 import { BlogService } from "./blog.service";
 import { CreateBlogDto } from "./dto/createBlog.dto";
 
-// @UseGuards(AuthGuard("jwt"))
 @Controller("blogs")
 export class BlogController {
 
@@ -29,7 +29,7 @@ export class BlogController {
     private readonly blogService: BlogService
   ) {}
 
-  // CREATE BLOG WITH IMAGE
+  // 🔒 CREATE BLOG (ADMIN)
   @UseGuards(AuthGuard("jwt"))
   @Post()
   @UseInterceptors(
@@ -40,10 +40,7 @@ export class BlogController {
           const unique =
             Date.now() + "-" + Math.round(Math.random() * 1e9);
 
-          cb(
-            null,
-            unique + extname(file.originalname)
-          );
+          cb(null, unique + extname(file.originalname));
         }
       })
     })
@@ -58,19 +55,33 @@ export class BlogController {
     });
   }
 
-  // GET ALL
+  // 🌍 PUBLIC: GET ONLY PUBLISHED BLOGS
+  @Get("published")
+  findPublished() {
+    return this.blogService.findPublished();
+  }
+
+  // 🌍 PUBLIC: GET ONE PUBLISHED BLOG
+  @Get("published/:id")
+  findPublishedOne(@Param("id") id: string) {
+    return this.blogService.findPublishedOne(+id);
+  }
+
+  // 🔐 ADMIN: GET ALL BLOGS (Draft + Published)
+  @UseGuards(AuthGuard("jwt"))
   @Get()
   findAll() {
     return this.blogService.findAll();
   }
 
-  // GET ONE
+  // 🔐 ADMIN: GET ONE BLOG (any status)
+  @UseGuards(AuthGuard("jwt"))
   @Get(":id")
   findOne(@Param("id") id: string) {
     return this.blogService.findOne(+id);
   }
 
-  // UPDATE BLOG WITH OPTIONAL IMAGE
+  // 🔒 UPDATE BLOG (ADMIN)
   @UseGuards(AuthGuard("jwt"))
   @Patch(":id")
   @UseInterceptors(
@@ -81,10 +92,7 @@ export class BlogController {
           const unique =
             Date.now() + "-" + Math.round(Math.random() * 1e9);
 
-          cb(
-            null,
-            unique + extname(file.originalname)
-          );
+          cb(null, unique + extname(file.originalname));
         }
       })
     })
@@ -100,7 +108,7 @@ export class BlogController {
     });
   }
 
-  // DELETE
+  // 🔒 DELETE BLOG (ADMIN)
   @UseGuards(AuthGuard("jwt"))
   @Delete(":id")
   remove(@Param("id") id: string) {

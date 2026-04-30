@@ -8,7 +8,7 @@ import {
   Param,
   Patch,
   UploadedFile,
-  UseInterceptors
+  UseInterceptors,
 } from '@nestjs/common';
 
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -20,108 +20,59 @@ import { CreateInstructorDto } from './dto/createInstructor';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { AdminGuard } from '../auth/admin.guard';
 
-
 const imageStorage = diskStorage({
-  destination:'./uploads/instructors',
+  destination: './uploads/instructors',
 
-  filename:(req,file,cb)=>{
-    const unique =
-      Date.now() +
-      "-" +
-      Math.round(
-        Math.random()*1e9
-      );
+  filename: (req, file, cb) => {
+    const unique = Date.now() + '-' + Math.round(Math.random() * 1e9);
 
-    cb(
-      null,
-      `instructor-${unique}${extname(
-        file.originalname
-      )}`
-    );
-  }
+    cb(null, `instructor-${unique}${extname(file.originalname)}`);
+  },
 });
-
 
 @Controller('instructors')
 export class InstructorController {
+  constructor(private readonly service: InstructorService) {}
 
- constructor(
-   private readonly service: InstructorService
- ) {}
+  // CREATE (protected)
+  @Post()
+  @UseGuards(JwtAuthGuard, AdminGuard)
+  @UseInterceptors(FileInterceptor('image', { storage: imageStorage }))
+  createInstructor(
+    @Body() dto: CreateInstructorDto,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    return this.service.create(dto, file?.filename);
+  }
 
+  // GET ALL (PUBLIC)
+  @Get()
+  findAll() {
+    return this.service.findAll();
+  }
 
- @Post()
- @UseInterceptors(
-   FileInterceptor(
-     'image',
-     { storage:imageStorage }
-   )
- )
- createInstructor(
-   @Body() dto: CreateInstructorDto,
-   @UploadedFile() file: Express.Multer.File
- ){
-   return this.service.create(
-      dto,
-      file?.filename
-   );
- }
+  // GET ONE (PUBLIC)
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.service.findOne(+id);
+  }
 
+  // DELETE (ADMIN ONLY)
+  @Delete(':id')
+  @UseGuards(JwtAuthGuard, AdminGuard)
+  remove(@Param('id') id: string) {
+    return this.service.remove(+id);
+  }
 
- @Get()
- @UseGuards(JwtAuthGuard)
- findAll(){
-   return this.service.findAll();
- }
-
-
- /* ADD THIS */
- @Get(':id')
- @UseGuards(JwtAuthGuard)
- findOne(
-   @Param('id') id: string
- ){
-   return this.service.findOne(
-      +id
-   );
- }
-
-
- @Delete(':id')
- @UseGuards(
-   JwtAuthGuard,
-   AdminGuard
- )
- remove(
-   @Param('id') id: string
- ){
-   return this.service.remove(
-      +id
-   );
- }
-
-
- @Patch(':id')
- @UseGuards(
-   JwtAuthGuard,
-   AdminGuard
- )
- @UseInterceptors(
-   FileInterceptor(
-      'image',
-      { storage:imageStorage }
-   )
- )
- update(
-   @Param('id') id: string,
-   @Body() dto: CreateInstructorDto,
-   @UploadedFile() file: Express.Multer.File
- ){
-   return this.service.update(
-      +id,
-      dto,
-      file?.filename
-   );
- }
-
+  // UPDATE (ADMIN ONLY)
+  @Patch(':id')
+  @UseGuards(JwtAuthGuard, AdminGuard)
+  @UseInterceptors(FileInterceptor('image', { storage: imageStorage }))
+  update(
+    @Param('id') id: string,
+    @Body() dto: CreateInstructorDto,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    return this.service.update(+id, dto, file?.filename);
+  }
 }
