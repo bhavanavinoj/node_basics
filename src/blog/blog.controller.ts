@@ -9,7 +9,7 @@ import {
   UseGuards,
   UploadedFile,
   UseInterceptors,
-  ParseIntPipe, // ✅ added
+  ParseIntPipe,
 } from '@nestjs/common';
 
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -33,8 +33,7 @@ export class BlogController {
       storage: diskStorage({
         destination: './uploads',
         filename: (req, file, cb) => {
-          const unique =
-            Date.now() + '-' + Math.round(Math.random() * 1e9);
+          const unique = Date.now() + '-' + Math.round(Math.random() * 1e9);
           cb(null, unique + extname(file.originalname));
         },
       }),
@@ -48,6 +47,12 @@ export class BlogController {
       ...dto,
       image: file?.filename,
     });
+  }
+
+  // ✅ FIX: ADD THIS → so /blogs works again
+  @Get()
+  findAllPublic() {
+    return this.blogService.findPublished();
   }
 
   // 🌍 PUBLIC: GET ALL PUBLISHED BLOGS
@@ -65,7 +70,7 @@ export class BlogController {
 
   // 🌍 PUBLIC: GET ONE BLOG
   @Get(':id')
-  findOne(@Param('id', ParseIntPipe) id: number) { // ✅ FIXED
+  findOne(@Param('id', ParseIntPipe) id: number) {
     return this.blogService.findOne(id);
   }
 
@@ -77,15 +82,14 @@ export class BlogController {
       storage: diskStorage({
         destination: './uploads',
         filename: (req, file, cb) => {
-          const unique =
-            Date.now() + '-' + Math.round(Math.random() * 1e9);
+          const unique = Date.now() + '-' + Math.round(Math.random() * 1e9);
           cb(null, unique + extname(file.originalname));
         },
       }),
     }),
   )
   update(
-    @Param('id', ParseIntPipe) id: number, // ✅ FIXED
+    @Param('id', ParseIntPipe) id: number,
     @UploadedFile() file: Express.Multer.File,
     @Body() dto: any,
   ) {
@@ -98,9 +102,7 @@ export class BlogController {
   // 🔒 DELETE BLOG (ADMIN)
   @UseGuards(AuthGuard('jwt'))
   @Delete(':id')
-  remove(@Param('id', ParseIntPipe) id: number) { // ✅ FIXED
+  remove(@Param('id', ParseIntPipe) id: number) {
     return this.blogService.remove(id);
   }
 }
-
-export default BlogController;

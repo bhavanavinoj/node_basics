@@ -12,6 +12,7 @@ import { AdminModule } from './admin/admin.module';
 import { BlogModule } from './blog/blog.module';
 import { ChangePasswordModule } from './change-password/change-password.module';
 import { InstructorModule } from './instructor/instructor.module'; // ✅ ONLY THIS
+import { CourseModule } from './course/course.module';
 
 @Module({
   imports: [
@@ -36,7 +37,8 @@ import { InstructorModule } from './instructor/instructor.module'; // ✅ ONLY T
     AdminModule,
     BlogModule,
     ChangePasswordModule,
-    InstructorModule, 
+    InstructorModule,
+    CourseModule, 
   ],
   controllers: [AppController],
   providers: [AppService],
