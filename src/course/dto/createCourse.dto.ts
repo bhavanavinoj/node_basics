@@ -1,4 +1,9 @@
-import { IsString, IsNumber, IsEnum, IsOptional } from 'class-validator';
+import {
+  IsString,
+  IsNumber,
+  IsEnum,
+  IsOptional,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class CreateCourseDto {
@@ -8,6 +13,9 @@ export class CreateCourseDto {
   @IsString()
   description: string;
 
+  @IsString()
+  author: string;
+
   @Type(() => Number)
   @IsNumber()
   @IsOptional()
@@ -16,11 +24,13 @@ export class CreateCourseDto {
   @IsString()
   duration: string;
 
-  // ✅ ADD
   @IsEnum(['free', 'paid'])
   type: 'free' | 'paid';
 
-  // ✅ ADD
   @IsEnum(['beginner', 'moderate', 'advanced'])
   level: 'beginner' | 'moderate' | 'advanced';
+
+  // ✅ NEW STATUS FIELD
+  @IsString()
+  status: 'published' | 'draft';
 }

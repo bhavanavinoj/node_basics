@@ -25,16 +25,25 @@ export class Course {
   @Column({ nullable: true })
   image: string;
 
-  @Column('decimal', { nullable: true }) // ✅ allow null for free
+  @Column({ nullable: true })
+  author: string; // ✅ NEW
+
+  @Column('decimal', { nullable: true })
   price: number;
 
   @Column()
   duration: string;
 
-  @Column({ default: true })
-  isPublished: boolean;
+  // ❌ REMOVE THIS
+  // @Column({ default: true })
+  // isPublished: boolean;
 
   // ✅ ADD THIS
+  @Column({
+    default: 'published',
+  })
+  status: string;
+
   @Column({
     type: 'enum',
     enum: CourseType,
@@ -42,11 +51,17 @@ export class Course {
   })
   type: CourseType;
 
-  // ✅ ADD THIS
   @Column({
     type: 'enum',
     enum: CourseLevel,
     default: CourseLevel.BEGINNER,
   })
   level: CourseLevel;
+
+  // optional fields
+  @Column({ default: 0 })
+  students: number;
+
+  @Column({ default: 0 })
+  rating: number;
 }

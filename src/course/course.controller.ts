@@ -10,6 +10,7 @@ import {
   UploadedFile,
   UseInterceptors,
   ParseIntPipe,
+  Query,
 } from '@nestjs/common';
 
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -40,19 +41,23 @@ export class CourseController {
   @UseInterceptors(FileInterceptor('image', { storage: imageStorage }))
   createCourse(
     @Body() dto: CreateCourseDto,
-    @UploadedFile() file: Express.Multer.File,
+    @UploadedFile() file?: Express.Multer.File,
   ) {
-    // dto now includes: type + level
     return this.service.create(dto, file?.filename);
   }
 
-  // ✅ GET ALL (PUBLIC)
+  // ✅ GET ALL
+  // 🔥 PUBLIC → only published
+  // 🔥 ADMIN → all courses
   @Get()
-  findAll() {
-    return this.service.findAll();
+  findAll(@Query('admin') admin?: string) {
+    if (admin === 'true') {
+      return this.service.findAllAdmin(); // all courses
+    }
+    return this.service.findAll(); // only published
   }
 
-  // ✅ GET ONE (PUBLIC)
+  // ✅ GET ONE
   @Get(':id')
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.service.findOne(id);
@@ -72,8 +77,15 @@ export class CourseController {
   update(
     @Param('id', ParseIntPipe) id: number,
     @Body() dto: CreateCourseDto,
-    @UploadedFile() file: Express.Multer.File,
+    @UploadedFile() file?: Express.Multer.File,
   ) {
     return this.service.update(id, dto, file?.filename);
+  }
+
+  // ✅ 🔥 NEW: Toggle status (published ↔ draft)
+  @Patch(':id/toggle-status')
+  @UseGuards(JwtAuthGuard, AdminGuard)
+  toggleStatus(@Param('id', ParseIntPipe) id: number) {
+    return this.service.toggleStatus(id);
   }
 }
