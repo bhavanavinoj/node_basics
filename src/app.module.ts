@@ -13,6 +13,7 @@ import { BlogModule } from './blog/blog.module';
 import { ChangePasswordModule } from './change-password/change-password.module';
 import { InstructorModule } from './instructor/instructor.module'; // ✅ ONLY THIS
 import { CourseModule } from './course/course.module';
+import { ContactModule } from './contact/contact.module';
 
 @Module({
   imports: [
@@ -38,7 +39,8 @@ import { CourseModule } from './course/course.module';
     BlogModule,
     ChangePasswordModule,
     InstructorModule,
-    CourseModule, 
+    CourseModule,
+    ContactModule, 
   ],
   controllers: [AppController],
   providers: [AppService],
